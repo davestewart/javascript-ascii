@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>ASCII Tree</title>
+    <link  href="assets/bootstrap.min.css" rel="stylesheet" >
+    <link  href="assets/styles.css" rel="stylesheet">
+    <script src="assets/jquery.min.js"></script>
+    <script src="assets/ascii.js"></script>
+    <style type="text/css">
+        div, div *{
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>ASCII Tree</h1>
+
+    <main>
+
+        <form class="form-horizontal">
+
+            <fieldset>
+
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">Input</label>
+                    <div class="col-sm-10">
+                        <label class="radio-inline">
+                            <input type="radio" name="input" value="object" checked> Object
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="input" value="instance"> Instance
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="input" value="jquery"> jQuery instance
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="input" value="document"> Document
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="input" value="element"> Element
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="input" value="window"> Window
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">Sorting</label>
+                    <div class="col-sm-10 ">
+                        <label class="radio-inline">
+                            <input type="radio" name="sort" value="" checked> None
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="sort" value="true"> Alphabetical
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="sort" value="func"> Functions first
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="sort" value="prop"> Properties first
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">Members</label>
+                    <div class="col-sm-10 ">
+                        <label class="checkbox-inline">
+                            <input type="checkbox" id="include-prop" value="prop" checked> Properties
+                        </label>
+                        <label class="checkbox-inline">
+                            <input type="checkbox" id="include-func" value="func"> Functions
+                        </label>
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">Depth</label>
+                    <div class="col-sm-10 ">
+                        <label class="form-inline">
+                            <input type="number" id="depth" min="0" max="100" class="form-control input-sm" value="5">
+                        </label>
+                        <label class="checkbox-inline">
+                            <input type="checkbox" id="recursion" value="func"> Recursion
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">Ignore</label>
+                    <div class="col-sm-10 ">
+                        <label class="form-inline">
+                            <input type="text" class="form-control input-sm" value="">
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">Output</label>
+                    <div class="col-sm-10 ">
+                        <pre class="well" id="output">
+
+                        </pre>
+                    </div>
+                </div>
+
+            </fieldset>
+
+        </form>
+
+    </main>
+
+    <script>
+
+        var props = {
+            number: 1,
+            string: 'hello',
+            boolean: true,
+            array: [1, 2, 3],
+            method: function(a, b, c) { },
+            object: {foo: 1, bar: 2, baz: {a: 1, b: 2, c: 3}}
+        };
+
+        var object = {
+            self:null,
+            props:props
+        };
+        object.self = object;
+
+        function Test()
+        {
+            for(var name in props)
+            {
+                this[name] = props[name];
+            }
+        }
+        Test.prototype = props;
+
+        var inputs =
+        {
+            object: object,
+            instance: new Test(),
+            jquery:$('div'),
+            document: document,
+            element:document.getElementById('output'),
+            window: window
+        };
+
+        var source;
+
+        $('input').on('input change click', function()
+        {
+            var type = $('input[name=input]:checked').val();
+            source = inputs[type];
+            var options = {
+                depth     : $('#depth').val(),
+                recursion : $('#recursion').is(':checked'),
+                sort      : $('input[name=sort]:checked').val(),
+                prop      : $('#include-prop').is(':checked'),
+                func      : $('#include-func').is(':checked')
+            };
+            var output = Ascii.tree(source, options);
+
+            $('#output').text(output);
+
+        }).trigger('change');
+
+    </script>
+</body>
+</html>

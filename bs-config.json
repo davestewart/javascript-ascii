@@ -1,0 +1,10 @@
+{
+  "port": 8888,
+  "notify": false,
+  "files": [
+    "./demo/**/*.{html,htm,css,js}"
+  ],
+  "server": {
+    "baseDir": "./demo"
+  }
+}
