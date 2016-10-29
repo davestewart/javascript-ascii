@@ -1,12 +1,9 @@
-function isFunction (value) { return value && typeof value === 'function'; }
-function isValue (value) { return value && typeof value !== 'object' && typeof value !== 'undefined' && !isFunction(value); }
-function isObject (value) { return value && typeof value === 'object' && value !== null; }
-function isClass (value) { return value && typeof value === 'object' && value.constructor && Object.keys(value).length == 0; }
-function className (value) {
-  return Array.isArray(value)
-    ? '[object Array]'
-    : Object.prototype.toString.call(source)
-}
+import {
+  isClass,
+  isObject,
+  isFunction,
+  isValue,
+} from './utils';
 
 function print (name, value, recursion) {
 
