@@ -5,37 +5,37 @@ import {
   isValue,
 } from './utils';
 
-function print (name, value, recursion) {
+function print (name, value, recursive) {
 
   var val;
-  if (recursion) {
-    val = ' : <recursion>';
+  if (recursive) {
+    name  = name + ': Object';
+    val   = ' <recursion>';
   }
   else if(typeof value === 'undefined'){
-    val = ' : undefined';
+    val   = ': undefined';
   }
   else if (Array.isArray(value)) {
-    val = ' : ' + (depth < options.depth ? '' : '<array>');
+    name  = name + ': Array[' +value.length+ ']';
+    val   = '';
   }
   else if (isFunction(value)) {
-    name = name + ' ()';
-    val = '';
+    name  = name + ': ';
+    val   = value.toString().match(/^.+\)/).pop();
   }
   else if (isClass(value)) {
-    val = ' : ' + String(value);
+    val   = ': ' + String(value);
   }
   else if (isObject(value)) {
-    val = depth < options.depth
-      ? ''
-      : '<object>';
-    val = ' : ' + val;
+    name  = name + ': Object';
+    val   = '';
   }
   else if (isValue(value)) {
-    val = ' : ' + JSON.stringify(value)
+    val   = ': ' + JSON.stringify(value)
   }
   else
   {
-    val = ' : ' + value;
+    val   = ': ' + value;
   }
 
   output += pipes.join('') + ' +- ' + name + val + '\n';
@@ -59,10 +59,10 @@ function process (parent, isLast) {
 
       var key = keys[k];
       var value = parent[key];
-      var recursion = !options.recursion && objects.indexOf(value) > -1;
+      var recursive = !options.recursive && objects.indexOf(value) > -1;
 
-      print(key, value, recursion);
-      if (!recursion && isObject(value)) {
+      print(key, value, recursive);
+      if (!recursive && isObject(value)) {
         process(value, k === keys.length - 1);
       }
 
