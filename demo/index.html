@@ -10,6 +10,15 @@
         div, div *{
             vertical-align: middle;
         }
+
+        .text-inline input {
+            position: relative;
+            top: 5px;
+        }
+
+        label.col-sm-2:after{
+            content: ': ';
+        }
     </style>
 </head>
 <body>
@@ -50,20 +59,23 @@
                     <label class="col-sm-2 control-label">Sorting</label>
                     <div class="col-sm-10 ">
                         <label class="radio-inline">
-                            <input type="radio" name="sort" value="" checked> None
+                            <input type="radio" name="sort" value="" checked> No
                         </label>
                         <label class="radio-inline">
-                            <input type="radio" name="sort" value="true"> Alphabetical
+                            <input type="radio" name="sort" value="true"> Yes
                         </label>
+                        <!--
                         <label class="radio-inline">
                             <input type="radio" name="sort" value="func"> Functions first
                         </label>
                         <label class="radio-inline">
                             <input type="radio" name="sort" value="prop"> Properties first
                         </label>
+                        -->
                     </div>
                 </div>
 
+                <!--
                 <div class="form-group">
                     <label class="col-sm-2 control-label">Members</label>
                     <div class="col-sm-10 ">
@@ -75,20 +87,21 @@
                         </label>
                     </div>
                 </div>
-
+                -->
 
                 <div class="form-group">
                     <label class="col-sm-2 control-label">Depth</label>
                     <div class="col-sm-10 ">
-                        <label class="form-inline">
+                        <label class="text-inline">
                             <input type="number" id="depth" min="0" max="100" class="form-control input-sm" value="5">
                         </label>
                         <label class="checkbox-inline">
-                            <input type="checkbox" id="recursion" value="func"> Recursion
+                            <input type="checkbox" id="recursive" value="func"> Recursive
                         </label>
                     </div>
                 </div>
 
+                <!--
                 <div class="form-group">
                     <label class="col-sm-2 control-label">Ignore</label>
                     <div class="col-sm-10 ">
@@ -97,6 +110,7 @@
                         </label>
                     </div>
                 </div>
+                -->
 
                 <div class="form-group">
                     <label class="col-sm-2 control-label">Output</label>
@@ -116,12 +130,18 @@
     <script>
 
         var props = {
-            number: 1,
-            string: 'hello',
-            boolean: true,
-            array: [1, 2, 3],
-            method: function(a, b, c) { },
-            object: {foo: 1, bar: 2, baz: {a: 1, b: 2, c: 3}}
+            a: 1,
+            b: 'hello',
+            c: true,
+            d: {
+                foo: [1, 2, 3],
+                bar: function(a, b, c) { },
+                baz: {
+                    x: 1,
+                    y: 2,
+                    z: 3
+                }
+            }
         };
 
         var object = {
@@ -151,22 +171,37 @@
 
         var source;
 
-        $('input').on('input change click', function()
+        function render(event)
         {
             var type = $('input[name=input]:checked').val();
             source = inputs[type];
             var options = {
-                depth     : $('#depth').val(),
-                recursion : $('#recursion').is(':checked'),
+                depth     : parseInt($('#depth').val()),
+                recursive : $('#recursive').is(':checked'),
                 sort      : $('input[name=sort]:checked').val(),
                 prop      : $('#include-prop').is(':checked'),
                 func      : $('#include-func').is(':checked')
             };
             var output = Ascii.tree(source, options);
 
+            if(type === 'window' && options.recursive && options.depth > 2)
+            {
+                if(!confirm("You've chosen to display the window object, at a depth larger than 2, with recursion on. This could take a long time!\n\nDo you want to continue?"))
+                {
+                    event.preventDefault();
+                    $('#depth').val(2);
+                    return;
+                }
+            }
+
             $('#output').text(output);
 
-        }).trigger('change');
+        }
+
+        $('input[type=number]').on('input', render);
+        $('input[type=checkbox], input[type=radio]').on('change', render);
+
+        render();
 
     </script>
 </body>
