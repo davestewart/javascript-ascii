@@ -2,6 +2,8 @@ import {
   isClass,
   isObject,
   isFunction,
+  className,
+  parseBool,
   isValue,
 } from './utils';
 
@@ -9,7 +11,7 @@ function print (name, value, recursive) {
 
   var val;
   if (recursive) {
-    name  = name + ': Object';
+    name  = name + ': ' + className(value);
     val   = ' <recursion>';
   }
   else if(typeof value === 'undefined'){
@@ -24,7 +26,7 @@ function print (name, value, recursive) {
     val   = value.toString().match(/^.+\)/).pop();
   }
   else if (isClass(value)) {
-    val   = ': ' + String(value);
+    val   = ': ' + className(value);
   }
   else if (isObject(value)) {
     name  = name + ': Object';
@@ -42,6 +44,31 @@ function print (name, value, recursive) {
 
 }
 
+function group (keys, parent, sort) {
+  switch(sort){
+    case true:
+    case 'true':
+    case 'on':
+      return keys.sort();
+      break;
+    case 'func':
+    case 'prop':
+      var func = [],
+          prop = [];
+      keys.map(key => {
+        parent[key] instanceof Function
+          ? func.push(key)
+          : prop.push(key);
+      });
+      return sort === 'func'
+        ? func.concat(prop)
+        : prop.concat(func);
+      break;
+  }
+  return keys;
+}
+
+
 function process (parent, isLast) {
 
   if (depth < options.depth) {
@@ -51,8 +78,14 @@ function process (parent, isLast) {
     pipes.push(isLast !== false ? '    ' : ' |  ');
 
     var keys = Object.keys(parent);
+    keys = keys.filter( k => k !== 'constructor' )
+
     if (options.sort) {
-      keys.sort();
+      keys = keys.sort();
+    }
+
+    if(options.group) {
+      keys = group(keys, parent, options.group);
     }
 
     for (var k = 0; k < keys.length; k++) {
@@ -101,8 +134,10 @@ export default function (value, opts, name) {
 
   options = Object.assign(defaults, opts);
   options.depth = parseInt(options.depth);
+  options.sort = parseBool(options.sort);
+  options.group = parseBool(options.group);
 
-  output = ' +- ' + (opts.name || name || String(value)) + '\n';
+  output = ' +- ' + (opts.name || name || className(value)) + '\n';
 
   process(value);
 

@@ -65,7 +65,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _tree2 = _interopRequireDefault(_tree);
 	
-	var _table = __webpack_require__(3);
+	var _table = __webpack_require__(4);
 	
 	var _table2 = _interopRequireDefault(_table);
 	
@@ -95,24 +95,28 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	  options = Object.assign(defaults, opts);
 	  options.depth = parseInt(options.depth);
+	  options.sort = (0, _utils.parseBool)(options.sort);
+	  options.group = (0, _utils.parseBool)(options.group);
 	
-	  output = ' +- ' + (opts.name || name || String(value)) + '\n';
+	  output = ' +- ' + (opts.name || name || (0, _utils.className)(value)) + '\n';
 	
 	  process(value);
 	
 	  return output;
 	};
 	
-	var _utils = __webpack_require__(4);
+	var _utils = __webpack_require__(3);
 	
 	function print(name, value, recursive) {
 	
 	  var val;
 	  if (recursive) {
-	    name = name + ': Object';
+	    name = name + ': ' + (0, _utils.className)(value);
 	    val = ' <recursion>';
 	  } else if (typeof value === 'undefined') {
 	    val = ': undefined';
+	  } else if (value instanceof Date) {
+	    val = ' : ' + String(value);
 	  } else if (Array.isArray(value)) {
 	    name = name + ': Array[' + value.length + ']';
 	    val = '';
@@ -120,7 +124,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    name = name + ': ';
 	    val = value.toString().match(/^.+\)/).pop();
 	  } else if ((0, _utils.isClass)(value)) {
-	    val = ': ' + String(value);
+	    val = ': ' + (0, _utils.className)(value);
 	  } else if ((0, _utils.isObject)(value)) {
 	    name = name + ': Object';
 	    val = '';
@@ -133,6 +137,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	  output += pipes.join('') + ' +- ' + name + val + '\n';
 	}
 	
+	function group(keys, parent, sort) {
+	  switch (sort) {
+	    case true:
+	    case 'true':
+	    case 'on':
+	      return keys.sort();
+	      break;
+	    case 'func':
+	    case 'prop':
+	      var func = [],
+	          prop = [];
+	      keys.map(function (key) {
+	        parent[key] instanceof Function ? func.push(key) : prop.push(key);
+	      });
+	      return sort === 'func' ? func.concat(prop) : prop.concat(func);
+	      break;
+	  }
+	  return keys;
+	}
+	
 	function process(parent, isLast) {
 	
 	  if (depth < options.depth) {
@@ -142,8 +166,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	    pipes.push(isLast !== false ? '    ' : ' |  ');
 	
 	    var keys = Object.keys(parent);
+	    keys = keys.filter(function (k) {
+	      return k !== 'constructor';
+	    });
+	
 	    if (options.sort) {
-	      keys.sort();
+	      keys = keys.sort();
+	    }
+	
+	    if (options.group) {
+	      keys = group(keys, parent, options.group);
 	    }
 	
 	    for (var k = 0; k < keys.length; k++) {
@@ -370,9 +402,46 @@ return /******/ (function(modules) { // webpackBootstrap
 	  value: true
 	});
 	
-	exports.default = function () {
-	  return 'table!';
-	};
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+	
+	exports.isObject = isObject;
+	exports.isClass = isClass;
+	exports.className = className;
+	exports.isFunction = isFunction;
+	exports.isValue = isValue;
+	exports.parseBool = parseBool;
+	function isObject(value) {
+	  return value && (typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object' && value !== null;
+	}
+	
+	function isClass(value) {
+	  return value && (typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object' && value.constructor && Object.keys(value).length == 0;
+	}
+	
+	function className(value) {
+	  if (value instanceof Object && value.constructor) {
+	    return value.constructor.name;
+	  }
+	  var matches = Object.prototype.toString.call(source).match(/\[\w+ (\w+)\]/);
+	  return matches ? matches[1] : matches;
+	}
+	
+	function isFunction(value) {
+	  return typeof value === 'function';
+	}
+	
+	function isValue(value) {
+	  return value && (typeof value === 'undefined' ? 'undefined' : _typeof(value)) !== 'object' && typeof value !== 'undefined' && !isFunction(value);
+	}
+	
+	/**
+	 * Returns any boolean-like values as true booleans
+	 * @param value
+	 * @returns {boolean|*}
+	 */
+	function parseBool(value) {
+	  return typeof value === 'string' ? value === 'true' || value === '1' || value === 'on' ? true : value === 'false' || value === '0' || value === 'off' ? false : value : value;
+	}
 
 /***/ },
 /* 4 */
@@ -384,32 +453,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  value: true
 	});
 	
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-	
-	exports.isObject = isObject;
-	exports.isClass = isClass;
-	exports.className = className;
-	exports.isFunction = isFunction;
-	exports.isValue = isValue;
-	function isObject(value) {
-	  return value && (typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object' && value !== null;
-	}
-	
-	function isClass(value) {
-	  return value && (typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object' && value.constructor && Object.keys(value).length == 0;
-	}
-	
-	function className(value) {
-	  return Array.isArray(value) ? '[object Array]' : Object.prototype.toString.call(source);
-	}
-	
-	function isFunction(value) {
-	  return value && typeof value === 'function';
-	}
-	
-	function isValue(value) {
-	  return value && (typeof value === 'undefined' ? 'undefined' : _typeof(value)) !== 'object' && typeof value !== 'undefined' && !isFunction(value);
-	}
+	exports.default = function () {
+	  return 'table!';
+	};
 
 /***/ }
 /******/ ])

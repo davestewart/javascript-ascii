@@ -21,7 +21,7 @@ Output objects' structure in text / ASCII format:
                  +- z: 3
 ```
 
-## Useage
+## Usage
 
 Load the library, then:
 

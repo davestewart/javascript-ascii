@@ -32,62 +32,57 @@
             <fieldset>
 
                 <div class="form-group">
-                    <label class="col-sm-2 control-label">Input</label>
+                    <label class="col-sm-2 control-label">Source</label>
                     <div class="col-sm-10">
                         <label class="radio-inline">
-                            <input type="radio" name="input" value="object" checked> Object
+                            <input type="radio" name="source" value="object" checked> Object
                         </label>
                         <label class="radio-inline">
-                            <input type="radio" name="input" value="instance"> Instance
+                            <input type="radio" name="source" value="instance"> Instance
                         </label>
                         <label class="radio-inline">
-                            <input type="radio" name="input" value="jquery"> jQuery instance
+                            <input type="radio" name="source" value="jquery"> jQuery instance
                         </label>
                         <label class="radio-inline">
-                            <input type="radio" name="input" value="document"> Document
+                            <input type="radio" name="source" value="document"> Document
                         </label>
                         <label class="radio-inline">
-                            <input type="radio" name="input" value="element"> Element
+                            <input type="radio" name="source" value="element"> Element
                         </label>
                         <label class="radio-inline">
-                            <input type="radio" name="input" value="window"> Window
+                            <input type="radio" name="source" value="window"> Window
                         </label>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label class="col-sm-2 control-label">Sorting</label>
+                    <label class="col-sm-2 control-label">Sort</label>
                     <div class="col-sm-10 ">
                         <label class="radio-inline">
-                            <input type="radio" name="sort" value="" checked> No
+                            <input type="radio" name="sort" value="0" checked> No
                         </label>
                         <label class="radio-inline">
-                            <input type="radio" name="sort" value="true"> Yes
+                            <input type="radio" name="sort" value="1"> Yes
                         </label>
                         <!--
-                        <label class="radio-inline">
-                            <input type="radio" name="sort" value="func"> Functions first
-                        </label>
-                        <label class="radio-inline">
-                            <input type="radio" name="sort" value="prop"> Properties first
-                        </label>
                         -->
                     </div>
                 </div>
 
-                <!--
                 <div class="form-group">
-                    <label class="col-sm-2 control-label">Members</label>
+                    <label class="col-sm-2 control-label">Group</label>
                     <div class="col-sm-10 ">
-                        <label class="checkbox-inline">
-                            <input type="checkbox" id="include-prop" value="prop" checked> Properties
+                        <label class="radio-inline">
+                            <input type="radio" name="group" value="0" checked> No
                         </label>
-                        <label class="checkbox-inline">
-                            <input type="checkbox" id="include-func" value="func"> Functions
+                        <label class="radio-inline">
+                            <input type="radio" name="group" value="func"> Functions first
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="group" value="prop"> Properties first
                         </label>
                     </div>
                 </div>
-                -->
 
                 <div class="form-group">
                     <label class="col-sm-2 control-label">Depth</label>
@@ -133,10 +128,11 @@
             a: 1,
             b: 'hello',
             c: true,
-            d: {
+            d: new Date(),
+            e: function(a, b, c) { },
+            f: {
                 foo: [1, 2, 3],
-                bar: function(a, b, c) { },
-                baz: {
+                bar: {
                     x: 1,
                     y: 2,
                     z: 3
@@ -158,6 +154,9 @@
             }
         }
         Test.prototype = props;
+        Test.prototype.constructor = Test;
+
+        props.e.baz = new Test();
 
         var inputs =
         {
@@ -173,12 +172,13 @@
 
         function render(event)
         {
-            var type = $('input[name=input]:checked').val();
+            var type = $('input[name=source]:checked').val();
             source = inputs[type];
             var options = {
                 depth     : parseInt($('#depth').val()),
                 recursive : $('#recursive').is(':checked'),
                 sort      : $('input[name=sort]:checked').val(),
+                group     : $('input[name=group]:checked').val(),
                 prop      : $('#include-prop').is(':checked'),
                 func      : $('#include-func').is(':checked')
             };
@@ -200,6 +200,8 @@
 
         $('input[type=number]').on('input', render);
         $('input[type=checkbox], input[type=radio]').on('change', render);
+
+        $('input[value=instance]').attr('selected', 'selected');
 
         render();
 
