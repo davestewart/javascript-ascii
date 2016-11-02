@@ -8,7 +8,10 @@ export function isClass (value) {
 
 export function className (value) {
   if(value instanceof Object && value.constructor){
-    return value.constructor.name;
+    var className = value.constructor.name;
+    if(className !== 'n') { // hacky pseudo-fix for minified classes
+      return className;
+    }
   }
   var matches = Object.prototype.toString.call(source).match(/\[\w+ (\w+)\]/);
   return matches
