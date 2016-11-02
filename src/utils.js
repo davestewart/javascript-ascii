@@ -6,13 +6,26 @@ export function isClass (value) {
   return value && typeof value === 'object' && value.constructor && Object.keys(value).length == 0;
 }
 
-export function className (value) {
+export function className (value, classes) {
+
+  // lookup
+  if(classes) {
+    for(var name in classes) {
+      if(value instanceof classes[name]) {
+        return name;
+      }
+    }
+  }
+
+  // try to grab real class name, unless minified
   if(value instanceof Object && value.constructor){
     var className = value.constructor.name;
-    if(className !== 'n') { // hacky pseudo-fix for minified classes
+    if(className !== 'n') {
       return className;
     }
   }
+
+  // attempt to lookup name from toString
   var matches = Object.prototype.toString.call(source).match(/\[\w+ (\w+)\]/);
   return matches
     ? matches[1]

@@ -11,7 +11,7 @@ function print (name, value, recursive) {
 
   var val;
   if (recursive) {
-    name  = name + ': ' + className(value);
+    name  = name + ': ' + className(value, options.classes);
     val   = ' <recursion>';
   }
   else if(typeof value === 'undefined'){
@@ -135,7 +135,7 @@ export default function (value, opts, name) {
   options.sort      = parseBool(options.sort);
   options.group     = parseBool(options.group);
 
-  output = ' +- ' + (opts.name || name || className(value)) + '\n';
+  output = ' +- ' + (opts.name || name || className(value, options.classes)) + '\n';
 
   process(value);
 
