@@ -6,6 +6,14 @@ export function isClass (value) {
   return value && typeof value === 'object' && value.constructor && Object.keys(value).length == 0;
 }
 
+export function isFunction (value) {
+  return typeof value === 'function';
+}
+
+export function isValue (value) {
+  return value && typeof value !== 'object' && typeof value !== 'undefined' && !isFunction(value);
+}
+
 export function className (value, classes) {
 
   // lookup
@@ -30,14 +38,6 @@ export function className (value, classes) {
   return matches
     ? matches[1]
     : matches
-}
-
-export function isFunction (value) {
-  return typeof value === 'function';
-}
-
-export function isValue (value) {
-  return value && typeof value !== 'object' && typeof value !== 'undefined' && !isFunction(value);
 }
 
 /**
