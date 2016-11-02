@@ -6,22 +6,38 @@ export function isClass (value) {
   return value && typeof value === 'object' && value.constructor && Object.keys(value).length == 0;
 }
 
-export function className (value) {
-  if(value instanceof Object && value.constructor){
-    return value.constructor.name;
-  }
-  var matches = Object.prototype.toString.call(source).match(/\[\w+ (\w+)\]/);
-  return matches
-    ? matches[1]
-    : matches
-}
-
 export function isFunction (value) {
   return typeof value === 'function';
 }
 
 export function isValue (value) {
   return value && typeof value !== 'object' && typeof value !== 'undefined' && !isFunction(value);
+}
+
+export function className (value, classes) {
+
+  // lookup
+  if(classes) {
+    for(var name in classes) {
+      if(value instanceof classes[name]) {
+        return name;
+      }
+    }
+  }
+
+  // try to grab real class name, unless minified
+  if(value instanceof Object && value.constructor){
+    var className = value.constructor.name;
+    if(className !== 'n') {
+      return className;
+    }
+  }
+
+  // attempt to lookup name from toString
+  var matches = Object.prototype.toString.call(source).match(/\[\w+ (\w+)\]/);
+  return matches
+    ? matches[1]
+    : matches
 }
 
 /**

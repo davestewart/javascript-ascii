@@ -87,7 +87,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = function (value, opts, name) {
 	
 	  depth = 0;
-	  output = '';
 	  path = '';
 	  objects = [];
 	  names = [];
@@ -95,10 +94,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	  options = Object.assign(defaults, opts);
 	  options.depth = parseInt(options.depth);
+	  options.recursive = (0, _utils.parseBool)(options.recursive);
 	  options.sort = (0, _utils.parseBool)(options.sort);
 	  options.group = (0, _utils.parseBool)(options.group);
 	
-	  output = ' +- ' + (opts.name || name || (0, _utils.className)(value)) + '\n';
+	  output = ' +- ' + (opts.name || name || (0, _utils.className)(value, options.classes)) + '\n';
 	
 	  process(value);
 	
@@ -111,7 +111,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	  var val;
 	  if (recursive) {
-	    name = name + ': ' + (0, _utils.className)(value);
+	    name = name + ': ' + (0, _utils.className)(value, options.classes);
 	    val = ' <recursion>';
 	  } else if (typeof value === 'undefined') {
 	    val = ': undefined';
@@ -137,13 +137,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  output += pipes.join('') + ' +- ' + name + val + '\n';
 	}
 	
-	function group(keys, parent, sort) {
-	  switch (sort) {
-	    case true:
-	    case 'true':
-	    case 'on':
-	      return keys.sort();
-	      break;
+	function group(keys, parent, type) {
+	  switch (type) {
 	    case 'func':
 	    case 'prop':
 	      var func = [],
@@ -151,7 +146,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      keys.map(function (key) {
 	        parent[key] instanceof Function ? func.push(key) : prop.push(key);
 	      });
-	      return sort === 'func' ? func.concat(prop) : prop.concat(func);
+	      return type === 'func' ? func.concat(prop) : prop.concat(func);
 	      break;
 	  }
 	  return keys;
@@ -171,7 +166,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    });
 	
 	    if (options.sort) {
-	      keys = keys.sort();
+	      keys.sort();
 	    }
 	
 	    if (options.group) {
@@ -406,9 +401,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	exports.isObject = isObject;
 	exports.isClass = isClass;
-	exports.className = className;
 	exports.isFunction = isFunction;
 	exports.isValue = isValue;
+	exports.className = className;
 	exports.parseBool = parseBool;
 	function isObject(value) {
 	  return value && (typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object' && value !== null;
@@ -418,20 +413,36 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return value && (typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object' && value.constructor && Object.keys(value).length == 0;
 	}
 	
-	function className(value) {
-	  if (value instanceof Object && value.constructor) {
-	    return value.constructor.name;
-	  }
-	  var matches = Object.prototype.toString.call(source).match(/\[\w+ (\w+)\]/);
-	  return matches ? matches[1] : matches;
-	}
-	
 	function isFunction(value) {
 	  return typeof value === 'function';
 	}
 	
 	function isValue(value) {
 	  return value && (typeof value === 'undefined' ? 'undefined' : _typeof(value)) !== 'object' && typeof value !== 'undefined' && !isFunction(value);
+	}
+	
+	function className(value, classes) {
+	
+	  // lookup
+	  if (classes) {
+	    for (var name in classes) {
+	      if (value instanceof classes[name]) {
+	        return name;
+	      }
+	    }
+	  }
+	
+	  // try to grab real class name, unless minified
+	  if (value instanceof Object && value.constructor) {
+	    var className = value.constructor.name;
+	    if (className !== 'n') {
+	      return className;
+	    }
+	  }
+	
+	  // attempt to lookup name from toString
+	  var matches = Object.prototype.toString.call(source).match(/\[\w+ (\w+)\]/);
+	  return matches ? matches[1] : matches;
 	}
 	
 	/**

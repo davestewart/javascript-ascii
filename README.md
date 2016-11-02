@@ -3,19 +3,20 @@
 Output objects' structure in text / ASCII format:
 
 ```
- +- [object Object]
-     +- self: Object <recursion>
+ +- Test
+     +- self: Test <recursion>
      +- props: Object
          +- a: 1
          +- b: "hello"
          +- c: true
-         +- d: Object
+         +- d : Tue Nov 01 2016 00:24:11 GMT+0000 (GMT)
+         +- e: function (a, b, c)
+         +- f: Object
              +- foo: Array[3]
              |   +- 0: 1
              |   +- 1: 2
              |   +- 2: 3
-             +- bar: function (a, b, c)
-             +- baz: Object
+             +- bar: Object
                  +- x: 1
                  +- y: 2
                  +- z: 3
@@ -23,17 +24,47 @@ Output objects' structure in text / ASCII format:
 
 ## Usage
 
+### Creating a tree
+
 Load the library, then:
 
 ```
 var str = Ascii.tree(object, options)
 ```
 
-Options:
+### Options
 
-- `depth` : Number, defaults to 5
-- `recursive` : Boolean, defaults to false
-- `sort` : Boolean, defaults to false
+
+`depth`
+
+- Depth to iterate to
+- Number
+- Defaults to 5
+
+`recursive`
+ 
+- Recurse into self-referencing objects
+- Boolean
+- Defaults to false,
+
+`sort`
+
+- Alphabetically sort properties
+- Boolean
+- Defaults to false
+
+`group`
+
+- Sort by property type
+- String
+- Valid values 'prop' or 'func'
+- Defaults to null
+
+`classes`
+   
+- Lookup table of `{name:Class}` instances to correctly infer type
+- Object
+- Defaults to null
 
 ## Demo
 
@@ -41,15 +72,15 @@ Run the HTML demo to interactively test the library's settings.
 
 ## WIP
 
-Additional features coming soon:
+To do:
 
 - Additional iteration options
-- Better sorting options
 - Include/exclude options
 - Ignore options
 - Custom render function
 - Custom filter function
+- Custom naming function
 
-Coming later:
+Planned:
 
 - Table output
