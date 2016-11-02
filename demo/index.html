@@ -47,10 +47,10 @@
                             <input type="radio" name="source" value="document"> Document
                         </label>
                         <label class="radio-inline">
-                            <input type="radio" name="source" value="element"> Element
+                            <input type="radio" name="source" value="window"> Window
                         </label>
                         <label class="radio-inline">
-                            <input type="radio" name="source" value="window"> Window
+                            <input type="radio" name="source" value="element"> Element
                         </label>
                     </div>
                 </div>
@@ -180,7 +180,10 @@
                 sort      : $('input[name=sort]:checked').val(),
                 group     : $('input[name=group]:checked').val(),
                 prop      : $('#include-prop').is(':checked'),
-                func      : $('#include-func').is(':checked')
+                func      : $('#include-func').is(':checked'),
+                classes   : {
+                    jQuery  :jQuery
+                }
             };
             var output = Ascii.tree(source, options);
 
