@@ -47,13 +47,8 @@ function print (name, value, recursive) {
 
 }
 
-function group (keys, parent, sort) {
-  switch(sort){
-    case true:
-    case 'true':
-    case 'on':
-      return keys.sort();
-      break;
+function group (keys, parent, type) {
+  switch(type){
     case 'func':
     case 'prop':
       var func = [],
@@ -63,7 +58,7 @@ function group (keys, parent, sort) {
           ? func.push(key)
           : prop.push(key);
       });
-      return sort === 'func'
+      return type === 'func'
         ? func.concat(prop)
         : prop.concat(func);
       break;
@@ -84,7 +79,7 @@ function process (parent, isLast) {
     keys = keys.filter( k => k !== 'constructor' )
 
     if (options.sort) {
-      keys = keys.sort();
+      keys.sort();
     }
 
     if(options.group) {
@@ -129,16 +124,16 @@ var options,
 export default function (value, opts, name) {
 
   depth = 0;
-  output = '';
   path = '';
   objects = [];
   names = [];
   pipes = [];
 
   options = Object.assign(defaults, opts);
-  options.depth = parseInt(options.depth);
-  options.sort = parseBool(options.sort);
-  options.group = parseBool(options.group);
+  options.depth     = parseInt(options.depth);
+  options.recursive = parseBool(options.recursive);
+  options.sort      = parseBool(options.sort);
+  options.group     = parseBool(options.group);
 
   output = ' +- ' + (opts.name || name || className(value)) + '\n';
 
