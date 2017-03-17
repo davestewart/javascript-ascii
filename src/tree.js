@@ -18,7 +18,7 @@ function print (name, value, recursive) {
     val   = ': undefined';
   }
   else if (value instanceof Date) {
-    val   = ' : ' + String(value);
+    val   = ': ' + String(value);
   }
   else if (Array.isArray(value)) {
     name  = name + ': Array[' +value.length+ ']';

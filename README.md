@@ -13,7 +13,7 @@ Live text example:
          +- a: 1
          +- b: "hello"
          +- c: true
-         +- d : Tue Nov 01 2016 00:24:11 GMT+0000 (GMT)
+         +- d: Tue Nov 01 2016 00:24:11 GMT+0000 (GMT)
          +- e: function (a, b, c)
          +- f: Object
              +- foo: Array[3]
