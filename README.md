@@ -2,6 +2,10 @@
 
 Output objects' structure in text / ASCII format:
 
+![ascii-tree](https://cloud.githubusercontent.com/assets/132681/19949075/b3214c36-a147-11e6-9535-72971a1580b0.gif)
+
+Live text example:
+
 ```
  +- Test
      +- self: Test <recursion>
