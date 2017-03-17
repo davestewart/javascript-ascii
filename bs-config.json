@@ -2,9 +2,14 @@
   "port": 8888,
   "notify": false,
   "files": [
-    "./demo/**/*.{html,htm,css,js}"
+    "./demo/**/*.{html,htm,css,js}",
+    "./lib/**/*.js"
   ],
   "server": {
     "baseDir": "./demo"
-  }
+  },
+  "serveStatic": [{
+    "route": "/lib",
+    "dir": "lib"
+  }]
 }
